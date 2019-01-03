@@ -1,0 +1,68 @@
+[user]
+	name = Igor Ilić
+	email = igor.ilic@tradecore.com
+[github]
+	user = igorilic
+[gitlab]
+  user = igor.ilic@tradecore.com
+[bitbucket]
+  user = ilicigor@gmail.com
+[color]
+	ui = true
+[merge]
+	ff = false
+	tool = Kaleidoscope
+[branch]
+	autosetuprebase = always
+	rebase = preserve
+[diff "tex"]
+	wordRegex = "\\\\[a-zA-Z]+|[{}]\\\\.|[^\\{}[:space:]]+"
+[pull]
+	rebase = true
+[rebase]
+	autosquash = true
+	autostash = true
+[alias]
+    hist = log --pretty=format:'%h %ad | %s%d [%an]' --graph --date=short
+	graph = log --all --graph --decorate --oneline
+	br = branch
+	ci = commit
+	co = checkout
+	di = diff
+	ds = diff --staged
+	wd = diff --word-diff --ignore-all-space
+	wds = diff --staged --word-diff --ignore-all-space
+	difftex = difftool -y -t latex
+	st = status
+	lg = log --oneline --reverse
+	dls = diff-tree --no-commit-id --name-status -r
+	getroot = !pwd
+	oldest-ancestor = !zsh -c 'diff --old-line-format='' --new-line-format='' <(git rev-list --first-parent "${1:-master}") <(git rev-list --first-parent "${2:-HEAD}") | head -1' -
+	branchlog = !sh -c "git log `git oldest-ancestor`.."
+	branchdiff = !sh -c "git diff `git oldest-ancestor`.."
+	rebase2fork = !zsh -c 'git rebase -i $(git merge-base --fork-point "${0:-master}")'
+[log]
+	abbrevCommit = true
+[status]
+	short = true
+[rerere]
+	enabled = true
+[difftool.latex]
+	cmd = latexdiff "$LOCAL" "$REMOTE"
+[credential]
+	helper = cache
+[gui]
+	recentrepo = /Users/igor/gc/web-wallet
+[core]
+	editor = /usr/local/bin/vim
+[mergetool "Kaleidoscope"]
+	cmd = ksdiff --merge --output \"$MERGED\" --base \"$BASE\" -- \"$LOCAL\" --snapshot \"$REMOTE\" --snapshot
+	trustexitcode = true
+[difftool "Kaleidoscope"]
+	cmd = ksdiff --partial-changeset --relative-path \"$MERGED\" -- \"$LOCAL\" \"$REMOTE\"
+[difftool]
+	prompt = false
+[mergetool]
+	prompt = false
+[diff]
+	tool = Kaleidoscope
