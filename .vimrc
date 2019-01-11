@@ -14,6 +14,7 @@ let g:python3_host_prog = '/usr/local/bin/python3'
 
 
 " Ruby exec
+" /usr/local/bin/neovim-ruby-host
 let g:ruby_host_prog = '/usr/local/bin/neovim-ruby-host'
 
 call plug#begin()
