@@ -36,7 +36,8 @@ Plug 'mxw/vim-jsx'
 Plug 'valloric/MatchTagAlways'
 Plug 'flowtype/vim-flow'
 " suntax
-Plug 'w0rp/ale'
+Plug 'dense-analysis/ale'
+Plug 'maximbaz/lightline-ale'
 Plug 'sbdchd/neoformat'
 Plug 'mattn/emmet-vim'
 Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
@@ -47,25 +48,11 @@ Plug 'autozimu/LanguageClient-neovim', {
     \ }
 " Plugin key-mappings.
 " Note: It must be "imap" and "smap".  It uses <Plug> mappings.
-imap <C-k>     <Plug>(neosnippet_expand_or_jump)
-smap <C-k>     <Plug>(neosnippet_expand_or_jump)
-xmap <C-k>     <Plug>(neosnippet_expand_target)
-smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
-\ "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
-let g:deoplete#enable_at_startup = 1
-
-" Enable snipMate compatibility feature.
-let g:neosnippet#enable_snipmate_compatibility = 1
-
-" Tell Neosnippet about the other snippets
-let g:neosnippet#snippets_directory='~/.vim/bundle/vim-snippets/snippets'
-
 
 " TypeScript
 Plug 'HerringtonDarkholme/yats.vim'
 Plug 'mhartington/nvim-typescript',       { 'do': './install.sh' }
 Plug 'neoclide/coc.nvim', { 'do': 'yarn install --frozen-lockfile' }
-let g:coc_global_extensions = ['coc-tslint-plugin', 'coc-tsserver', 'coc-emmet', 'coc-css', 'coc-html', 'coc-json', 'coc-yank', 'coc-prettier']
 Plug 'ianks/vim-tsx'
 
 " Snippets
@@ -95,6 +82,25 @@ Plug 'lervag/vimtex'
 Plug 'ajh17/VimCompletesMe'
 
 call plug#end()
+
+imap <C-k>     <Plug>(neosnippet_expand_or_jump)
+smap <C-k>     <Plug>(neosnippet_expand_or_jump)
+xmap <C-k>     <Plug>(neosnippet_expand_target)
+smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
+\ "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
+let g:deoplete#enable_at_startup = 1
+" Use ALE and also some plugin 'foobar' as completion sources for all code.
+call deoplete#custom#option('sources', {
+\ '_': ['ale'],
+\})
+let g:ale_completion_enabled = 1
+let g:ale_completion_tsserver_autoimport = 1
+" Enable snipMate compatibility feature.
+let g:neosnippet#enable_snipmate_compatibility = 1
+let g:coc_global_extensions = ['coc-tslint-plugin', 'coc-tsserver', 'coc-emmet', 'coc-css', 'coc-html', 'coc-json', 'coc-yank', 'coc-prettier']
+
+" Tell Neosnippet about the other snippets
+let g:neosnippet#snippets_directory='~/.vim/bundle/vim-snippets/snippets'
 
 " tweaks
 let g:vimtex_compiler_progname = 'nvr'
@@ -497,7 +503,8 @@ let g:lightline = {
 	\ 'colorscheme': 'nightowl',
 	\ 'active': {
 	\ 	'left': [ [ 'mode', 'paste' ],
-    \ 		  [ 'fugitive', 'filename' ] ]
+    \ 		  [ 'fugitive', 'filename' ] ],
+    \ 'right': [[ 'linter_checking', 'linter_errors', 'linter_warnings', 'linter_infos', 'linter_ok' ]]
 	\ },
 	\ 'component_function': {
 	\ 	'fugitive': 'LightLineFugitive',
@@ -508,6 +515,13 @@ let g:lightline = {
 	\ 'separator': { 'left': '', 'right': '' },
 	\ 'subseparator': { 'left': '', 'right': '' }
 	\ }
+let g:lightline.component_expand = {
+      \  'linter_checking': 'lightline#ale#checking',
+      \  'linter_infos': 'lightline#ale#infos',
+      \  'linter_warnings': 'lightline#ale#warnings',
+      \  'linter_errors': 'lightline#ale#errors',
+      \  'linter_ok': 'lightline#ale#ok',
+\ }
 function! LightLineFilename()
   let git_root = fnamemodify(FugitiveExtractGitDir(expand("%:p")), ":h")
   if expand("%:t") == ""
@@ -551,15 +565,25 @@ endfunction
 " Linting
 let g:ale_linters = {
 \  'javascript.jsx': ['eslint'],
+\  'typescript': ['eslint'],
+\  'typescript.tsx': ['eslint']
 \}
 
 let g:ale_fixers = {
-\  'javascript': ['eslint'],
+\  'javascript': ['prettier', 'eslint'],
+\  'typescript': ['prettier', 'eslint'],
+\  'typescript.tsx': ['prettier', 'eslint']
 \}
 
 let g:ale_sign_error = '●'
 let g:ale_sign_warning = '.'
 let g:ale_lint_on_enter = 0
+
+let g:lightline#ale#indicator_checking = "\uf110"
+let g:lightline#ale#indicator_infos = "\uf129"
+let g:lightline#ale#indicator_warnings = "\uf071"
+let g:lightline#ale#indicator_errors = "\uf05e"
+let g:lightline#ale#indicator_ok = "\uf00c"
 
 " Codi
 function! s:pp_js(line)
