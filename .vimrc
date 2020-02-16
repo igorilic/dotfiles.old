@@ -19,14 +19,15 @@ let g:ruby_host_prog = '/usr/local/bin/neovim-ruby-host'
 
 call plug#begin()
 " Colors and themes
-Plug 'junegunn/limelight.vim'
 Plug 'haishanh/night-owl.vim'
+Plug 'junegunn/limelight.vim'
 Plug 'junegunn/goyo.vim'
 Plug 'itchyny/lightline.vim'
 " File system helpers
 Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
 Plug 'Xuyuanp/nerdtree-git-plugin'
 Plug 'tomtom/tcomment_vim' " toggle comments <LEADER>__
+Plug '/usr/local/opt/fzf'
 " Javascript
 Plug 'pangloss/vim-javascript'
 Plug 'briancollins/vim-jst' " ejs syntax highlight
@@ -34,12 +35,12 @@ Plug 'briancollins/vim-jst' " ejs syntax highlight
 Plug 'mxw/vim-jsx'
 Plug 'valloric/MatchTagAlways'
 Plug 'flowtype/vim-flow'
-
 " suntax
 Plug 'w0rp/ale'
 Plug 'sbdchd/neoformat'
 Plug 'mattn/emmet-vim'
 Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+Plug 'Shougo/denite.nvim'
 Plug 'autozimu/LanguageClient-neovim', {
     \ 'branch': 'next',
     \ 'do': 'bash install.sh',
@@ -62,7 +63,10 @@ let g:neosnippet#snippets_directory='~/.vim/bundle/vim-snippets/snippets'
 
 " TypeScript
 Plug 'HerringtonDarkholme/yats.vim'
-Plug 'mhartington/nvim-typescript',       { 'do': ':UpdateRemotePlugins' }
+Plug 'mhartington/nvim-typescript',       { 'do': './install.sh' }
+Plug 'neoclide/coc.nvim', { 'do': 'yarn install --frozen-lockfile' }
+let g:coc_global_extensions = ['coc-tslint-plugin', 'coc-tsserver', 'coc-emmet', 'coc-css', 'coc-html', 'coc-json', 'coc-yank', 'coc-prettier']
+Plug 'ianks/vim-tsx'
 
 " Snippets
 Plug 'Shougo/neosnippet.vim'
@@ -85,8 +89,6 @@ Plug 'tpope/vim-surround'
 Plug 'tpope/vim-repeat'
 Plug 'dietsche/vim-lastplace'
 Plug 'suan/vim-instant-markdown'
-" prettier
-Plug 'prettier/vim-prettier', { 'do': 'yarn install'}
 
 " latex
 Plug 'lervag/vimtex'
@@ -179,6 +181,7 @@ inoremap [<CR> [<CR>]<C-o>O
 
 "ts
 au BufRead,BufNewFile *.ts setlocal filetype=typescript
+au BufRead,BufNewFile *.tsx setlocal filetype=typescript.tsx
 set rtp+=/home/igor/.vim/plugged/typescript-tools.vim/
 
 " js
@@ -428,8 +431,8 @@ let g:typescript_compiler_options = ''
 autocmd QuickFixCmdPost [^l]* nested cwindow
 autocmd QuickFixCmdPost l* nested lwindow
 
-autocmd FileType typescript JsPreTmpl html
-autocmd FileType typescript syn clear foldBraces
+" autocmd FileType typescript JsPreTmpl html
+" autocmd FileType typescript syn clear foldBraces
 
 let g:user_emmet_leader_key='<C-y>'
 let g:user_emmet_settings = {
@@ -491,10 +494,10 @@ let g:jsx_ext_required = 0
 "       \ ]
 " LightLine
 let g:lightline = {
-	\ 'colorscheme': 'night-owl',
+	\ 'colorscheme': 'nightowl',
 	\ 'active': {
 	\ 	'left': [ [ 'mode', 'paste' ],
-	\ 		  [ 'fugitive', 'filename' ] ]
+    \ 		  [ 'fugitive', 'filename' ] ]
 	\ },
 	\ 'component_function': {
 	\ 	'fugitive': 'LightLineFugitive',
@@ -506,7 +509,7 @@ let g:lightline = {
 	\ 'subseparator': { 'left': '', 'right': '' }
 	\ }
 function! LightLineFilename()
-  let git_root = fnamemodify(fugitive#extract_git_dir(expand("%:p")), ":h")
+  let git_root = fnamemodify(FugitiveExtractGitDir(expand("%:p")), ":h")
   if expand("%:t") == ""
     return "[No Name]"
   elseif git_root != "" && git_root != "."
